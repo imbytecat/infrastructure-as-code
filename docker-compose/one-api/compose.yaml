@@ -28,8 +28,8 @@ services:
       retries: 3
     labels:
       - traefik.enable=true
-      - traefik.http.services.oneapi.loadbalancer.server.port=3000
-      - traefik.http.routers.oneapi.rule=Host(`one-api.imbytecat.com`)
+      - traefik.http.services.one-api.loadbalancer.server.port=3000
+      - traefik.http.routers.one-api.rule=Host(`one-api.imbytecat.com`)
 
   mysql:
     image: mysql:8

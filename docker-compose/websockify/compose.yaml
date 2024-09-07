@@ -1,0 +1,17 @@
+services:
+  websockify:
+    image: jwnmulder/websockify:latest
+    restart: unless-stopped
+    env_file:
+      - websockify.default.env
+    networks:
+      traefik:
+    command: "80 $RUN_ARGUMENTS"
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.websockify.loadbalancer.server.port=80
+      - traefik.http.routers.websockify.rule=Host(`websockify.imbytecat.com`)
+
+networks:
+  traefik:
+    external: true
