@@ -1,0 +1,62 @@
+services:
+  one-api:
+    image: justsong/one-api:latest
+    restart: unless-stopped
+    env_file:
+      - path: one-api.default.env
+        required: true
+      - path: one-api.override.env
+        required: false
+    volumes:
+      - one-api_data:/data
+      - one-api_logs:/app/logs
+    networks:
+      one-api:
+      traefik:
+    command: --log-dir /app/logs
+    depends_on:
+      - mysql
+      - redis
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' | awk -F: '{print $2}'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.oneapi.loadbalancer.server.port=3000
+      - traefik.http.routers.oneapi.rule=Host(`one-api.imbytecat.com`)
+
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    env_file:
+      - path: mysql.default.env
+        required: true
+      - path: mysql.override.env
+        required: false
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      one-api:
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    networks:
+      one-api:
+
+volumes:
+  one-api_data:
+  one-api_logs:
+  mysql_data:
+
+networks:
+  one-api:
+    external: false
+  traefik:
+    external: true

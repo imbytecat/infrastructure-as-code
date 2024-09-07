@@ -34,7 +34,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - gitea
+      gitea:
 
 volumes:
   gitea_data:
