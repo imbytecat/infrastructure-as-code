@@ -1,0 +1,47 @@
+services:
+  gitea:
+    image: gitea/gitea:latest
+    restart: unless-stopped
+    env_file:
+      - path: gitea.default.env
+        required: true
+      - path: gitea.override.env
+        required: false
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      gitea:
+      traefik:
+    ports:
+      - "22:22"
+    depends_on:
+      - postgres
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gitea.rule=Host(`gitea.imbytecat.com`)
+      - traefik.http.services.gitea.loadbalancer.server.port=3000
+
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    env_file:
+      - path: postgres.default.env
+        required: true
+      - path: postgres.override.env
+        required: false
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gitea
+
+volumes:
+  gitea_data:
+  postgres_data:
+
+networks:
+  gitea:
+    external: false
+  traefik:
+    external: true
