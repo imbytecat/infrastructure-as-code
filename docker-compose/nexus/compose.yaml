@@ -1,0 +1,17 @@
+services:
+  nexus:
+    image: sonatype/nexus3:latest
+    restart: unless-stopped
+    volumes:
+      - nexus_data:/nexus-data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nexus.rule=Host(`nexus.imbytecat.com`)
+      - traefik.http.services.nexus.loadbalancer.server.port=8081
+
+volumes:
+  nexus_data:
+
+networks:
+  traefik:
+    external: true
