@@ -5,5 +5,4 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /data/docker-compose/frp/frpc/frpc.toml:/etc/frp/frpc.toml
-    network_mode: host
     restart: unless-stopped
