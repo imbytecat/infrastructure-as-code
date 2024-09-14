@@ -1,0 +1,11 @@
+services:
+  v2ray-websocket:
+    image: imbytecat/v2ray-websocket:latest
+    env_file:
+      - path: v2ray-websocket.default.env
+        required: true
+      - path: v2ray-websocket.override.env
+        required: false
+    ports:
+      - 80:80
+    restart: unless-stopped
