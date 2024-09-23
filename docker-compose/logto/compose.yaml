@@ -1,0 +1,34 @@
+services:
+  logto:
+    image: svhd/logto:1
+    restart: unless-stopped
+    env_file:
+      - logto.env
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.logto.rule=Host(`auth.imbytecat.com`)
+      - traefik.http.routers.logto.service=logto
+      - traefik.http.services.logto.loadbalancer.server.port=3001
+      - traefik.http.routers.logto-admin.rule=Host(`logto.imbytecat.com`)
+      - traefik.http.routers.logto-admin.service=logto-admin
+      - traefik.http.services.logto-admin.loadbalancer.server.port=3002
+
+  postgres:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    env_file:
+      - postgres.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
